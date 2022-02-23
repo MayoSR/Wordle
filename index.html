@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Wordle</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans:wght@700&display=swap"
@@ -20,14 +20,14 @@
             color: white;
         }
 
-        table{
+        table {
             table-layout: fixed;
         }
 
         td {
             border: 1px solid black;
-            height: 55px ;
-            width: 55px ;
+            height: 55px;
+            width: 55px;
         }
 
         .letter-input {
@@ -53,19 +53,32 @@
 
         .keyboard-keys {
             display: flex;
-            height: 12vw;
+            height: 14vw;
         }
 
         .keyboard-keys>p {
-            height: 8vw;
-            width: 8vw;
+            height: 10vw;
+            width: 8.5vw;
             border: 1px solid #212121;
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: 5px;
             margin-right: 3px;
-            font-size: 4vw;
+            font-size: 6vw;
+            -webkit-touch-callout: none;
+            /* iOS Safari */
+            -webkit-user-select: none;
+            /* Safari */
+            -khtml-user-select: none;
+            /* Konqueror HTML */
+            -moz-user-select: none;
+            /* Old versions of Firefox */
+            -ms-user-select: none;
+            /* Internet Explorer/Edge */
+            user-select: none;
+            /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
         }
 
         #control-buttons {
@@ -79,13 +92,66 @@
         #control-buttons>button {
             height: 30px;
             width: 30vw;
+
             border-radius: 5px;
             border: none;
             font-family: 'Montserrat', sans-serif;
             background-color: transparent;
             font-size: 16px;
             color: white;
-            border:1px solid grey
+            border: 1px solid grey
+        }
+
+        /* Desktops and laptops ----------- */
+        @media only screen and (min-width : 1024px) {
+            #control-buttons>button {
+                width: 120px;
+                height: 40px;
+            }
+
+            .keyboard-keys>p {
+                height: 40px;
+                width: 40px;
+                font-size: 24px;
+            }
+
+            .keyboard-keys {
+                height: 60px;
+            }
+
+            #control-buttons {
+                display: flex;
+                align-items: center;
+                width: 30%;
+                justify-content: space-evenly;
+                padding: 20px
+            }
+        }
+
+        /* Large screens ----------- */
+        @media only screen and (min-width : 1824px) {
+            #control-buttons>button {
+                width: 150px;
+                height: 50px;
+            }
+
+            .keyboard-keys>p {
+                height: 50px;
+                width: 50px;
+                font-size: 32px;
+            }
+
+            .keyboard-keys {
+                height: 60px;
+            }
+
+            #control-buttons {
+                display: flex;
+                align-items: center;
+                width: 20%;
+                justify-content: space-evenly;
+                padding: 20px
+            }
         }
     </style>
 </head>
@@ -96,7 +162,7 @@
     </table>
     <div id="control-buttons">
         <button onclick="checkResponse()">Check</button>
-        <button onclick="backspace()">Delete</button>
+        <button onclick="backspace(false)">Delete</button>
     </div>
 
     <div id="keyboard-layout">
@@ -130,20 +196,19 @@
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        function markLetters() {
-
-        }
 
         function checkResponse() {
             let word = ''
             for (let i = 0; i < focusCol; i++) {
-                word += document.getElementById(getPosByRowCol('ip', focusRow, i)).value
+
+                word += document.getElementById(getPosByRowCol('ip', focusRow, i)).value.toLowerCase()
             }
             if (word.length < 5) {
                 alert('Word length too short')
             }
             else {
                 if (wordList.indexOf(word) === -1) {
+                    console.log(word)
                     alert('Word does not exist')
                     moveFocus(focusRow, focusCol - 1)
                 }
@@ -153,8 +218,8 @@
                         setTimeout(() => {
 
                             alert('You won! The word was: ' + wordle)
-                            window.location.reload()
-                        },100)
+                            resetBoard()
+                        }, 100)
                     }
                     else {
                         checkLetterPositions(wordle, word)
@@ -184,19 +249,23 @@
 
         function checkLetterPositions(word1, word2) {
             let wordDict = counter(word1)
+            let word2Array = word2.split('')
 
             for (let i = 0; i < gridX; i++) {
                 if (word1[i] === word2[i]) {
                     wordDict[word1[i]] -= 1
+                    word2Array[i] = 1
                     document.getElementById(getPosByRowCol('td', focusRow, i)).style.backgroundColor = '#357C3C'
                     document.getElementById(getPosByRowCol('td', focusRow, i)).style.boxShadow = 'inset 0 0 0 2px #17361a'
                     document.getElementById(getPosByRowCol('td', focusRow, i)).style.border = '1px solid #17361a'
                     document.getElementById('key-' + word2[i]).style.backgroundColor = '#357C3C'
 
                 }
-                else { 
-
-                    if ((word1.indexOf(word2[i]) !== -1) && (wordDict[word2[i]] > 0)) {
+            }
+            for (let i = 0; i < gridX; i++) {
+                if(word2Array[i] !== 1){
+                    if (wordDict[word2Array[i]] > 0 ){
+                        wordDict[word2[i]] -= 1
                         document.getElementById(getPosByRowCol('td', focusRow, i)).style.backgroundColor = '#FFCA03'
                         document.getElementById(getPosByRowCol('td', focusRow, i)).style.boxShadow = 'inset 0 0 0 2px #997800'
                         document.getElementById(getPosByRowCol('td', focusRow, i)).style.border = '1px solid #997800'
@@ -224,6 +293,7 @@
                     ip.setAttribute('class', 'letter-input')
                     ip.setAttribute('onkeydown', 'changeInputCollector(event,this)')
                     ip.setAttribute('maxLength', 1)
+                    ip.setAttribute('inputmode', 'none')
                     ip.setAttribute('id', getPosByRowCol('ip', i, j))
                     td.setAttribute('id', getPosByRowCol('td', i, j))
                     td.appendChild(ip)
@@ -245,23 +315,35 @@
             }
         }
 
-        createWordleGrid()
 
         function changeInputCollector(e, obj) {
-            if (e.keyCode >= 65 && e.keyCode <= 91) {
+            if (e.type === 'click') {
+
                 if (focusCol !== gridX) {
+                    document.getElementById(getPosByRowCol('ip', focusRow, focusCol)).value = obj.textContent
                     moveFocus(focusRow, focusCol)
                     focusCol++
                 }
             }
-            else if (e.keyCode === 8) {
-                backspace()
+            else {
+                if (e.keyCode >= 65 && e.keyCode <= 91) {
+                    if (focusCol !== gridX) {
+                        moveFocus(focusRow, focusCol)
+                        focusCol++
+                    }
+                }
+            }
+            if (e.keyCode === 8) {
+                backspace(true)
             }
 
         }
 
-        function backspace() {
+        function backspace(keypress) {
             if (focusCol - 1 >= 0) {
+                if (!keypress) {
+                    document.getElementById(getPosByRowCol('ip', focusRow, focusCol - 1)).value = ''
+                }
                 moveFocus(focusRow, focusCol - 1)
                 focusCol--
             }
@@ -271,24 +353,27 @@
             keyboardLayoutRow1.split('').forEach(key => {
                 let p = document.createElement('p')
                 p.setAttribute('id', 'key-' + key)
+                p.addEventListener('click', function (e) { changeInputCollector(e, this) })
                 p.textContent = key.toUpperCase()
                 document.getElementById('keyboard-layout-row-1').appendChild(p)
             })
             keyboardLayoutRow2.split('').forEach(key => {
                 let p = document.createElement('p')
                 p.setAttribute('id', 'key-' + key)
+                p.addEventListener('click', function (e) { changeInputCollector(e, this) })
                 p.textContent = key.toUpperCase()
                 document.getElementById('keyboard-layout-row-2').appendChild(p)
             })
             keyboardLayoutRow3.split('').forEach(key => {
                 let p = document.createElement('p')
                 p.setAttribute('id', 'key-' + key)
+                p.addEventListener('click', function (e) { changeInputCollector(e, this) })
                 p.textContent = key.toUpperCase()
                 document.getElementById('keyboard-layout-row-3').appendChild(p)
             })
         }
 
-        createKeyboardLayout()
+
 
         window.addEventListener('keydown', (event) => {
 
@@ -297,9 +382,26 @@
             }
         })
 
-        document.body.addEventListener('click', () => {
-            moveFocus(focusRow, focusCol)
-        })
+        function truncateNode(id){
+            let node = document.getElementById(id)
+            while(node.firstChild){
+                node.firstChild.remove()
+            }
+        }
+
+        function resetBoard() {
+            focusRow = 0
+            focusCol = 0
+            wordle = wordList[getRandomInt(0, wordList.length)]
+            truncateNode('wordle-table')
+            truncateNode('keyboard-layout-row-1')
+            truncateNode('keyboard-layout-row-2')
+            truncateNode('keyboard-layout-row-3')
+            createWordleGrid()
+            createKeyboardLayout()
+        }
+
+        resetBoard()
 
 
     </script>
