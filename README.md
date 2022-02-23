@@ -1,6 +1,8 @@
 # Wordle
 
-Simple Wordle game. Code isn't as efficient as I'd like it to be, but I just wanted to do it quickly to try it and see if I could.
+Simple Wordle game.
+
+Note: Couldn't find a very good source for english words, so made do with Wikipedia common words. If some are missing, I apologise and will likely edit this further if enough people are interested
 
 # Website for demo
 
